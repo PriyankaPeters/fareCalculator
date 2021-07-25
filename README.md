@@ -2,4 +2,6 @@
 
 This project calculates total fare based on peak hours, capping and distances.
 
-Jacoco integrated for Code coverage.
+* Java 16
+* JUnit 5
+* Jacoco
