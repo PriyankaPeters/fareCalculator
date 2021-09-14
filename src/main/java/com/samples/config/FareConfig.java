@@ -9,8 +9,8 @@ import java.util.Objects;
 public class FareConfig {
 
     private final PeakHourConfig peakHourConfig;
+    private final FareFreeDaysConfig fareFreeDaysConfig;
 
-    // TODO: Nit picking here but can the name indicate that a combination of zones ?
     private static final MultiKeyMap fares = new MultiKeyMap();
     {
         fares.put(Zone.zone1, Zone.zone1, true, 30);
@@ -23,11 +23,15 @@ public class FareConfig {
         fares.put(Zone.zone2, Zone.zone2, false, 20);
     }
 
-    public FareConfig(PeakHourConfig peakHourConfig) {
+    public FareConfig(PeakHourConfig peakHourConfig, FareFreeDaysConfig fareFreeDaysConfig) {
         this.peakHourConfig = peakHourConfig;
+        this.fareFreeDaysConfig = fareFreeDaysConfig;
     }
 
     public Integer getFare(Zone fromZone, Zone toZone, LocalDateTime journeyStartDate){
+        if(fareFreeDaysConfig.isFareFreeDay(journeyStartDate)){
+            return 0;
+        }
         boolean isPeakHour = peakHourConfig.isPeakHour(journeyStartDate);
         Object fare = fares.get(fromZone, toZone, isPeakHour);
         return Objects.isNull(fare)? 0 : (Integer) fare;

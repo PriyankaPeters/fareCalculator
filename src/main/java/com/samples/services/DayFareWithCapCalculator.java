@@ -1,22 +1,24 @@
 package com.samples.services;
 
-import com.samples.config.JourneyWeightageConfig;
 import com.samples.domains.Journey;
+import com.samples.domains.Zone;
+import org.apache.commons.collections.map.MultiKeyMap;
 
 import java.util.Map;
 
 public class DayFareWithCapCalculator {
 
-    // TODO: Can use EnumMap to make it intuitive. THe keys are weightages right?
-    private static Map<Integer, Integer> dayFareCaps = Map.of(3, 120,
-            2, 100, 1, 80);
+    private static MultiKeyMap dayFareCaps = new MultiKeyMap();
+    static{
+        dayFareCaps.put(Zone.zone1, Zone.zone1, 100);
+        dayFareCaps.put(Zone.zone1, Zone.zone2, 120);
+        dayFareCaps.put(Zone.zone2, Zone.zone1, 120);
+        dayFareCaps.put(Zone.zone2, Zone.zone2, 80);
+    }
 
-    private final JourneyWeightageConfig journeyWeightageConfig;
     private final FareCalculator fareCalculator;
 
-    public DayFareWithCapCalculator(JourneyWeightageConfig journeyWeightageConfig,
-                                    FareCalculator fareCalculator) {
-        this.journeyWeightageConfig = journeyWeightageConfig;
+    public DayFareWithCapCalculator(FareCalculator fareCalculator) {
         this.fareCalculator = fareCalculator;
     }
 
@@ -36,8 +38,7 @@ public class DayFareWithCapCalculator {
     }
 
     private Integer getCap(Journey journey) {
-        Integer maxJourneyWeightage = journeyWeightageConfig.getWeightage(journey);
-        Integer cap = dayFareCaps.get(maxJourneyWeightage);
+        Integer cap = (Integer) dayFareCaps.get(journey.getFromZone(), journey.getToZone());
         return cap;
     }
 }

@@ -30,6 +30,7 @@ public class WeekFaresCalculator {
         return faresPerWeek;
     }
 
+    //TO-DO : Handle journeys across years
     private Map<Integer, List<Journey>> getJourneysPerWeek(List<Journey> journeys) {
         return journeys.stream().collect(Collectors.groupingBy(journey ->
                 CommonUtil.getWeek(journey.getStartDateTime())));

@@ -1,7 +1,7 @@
 package com.samples;
 
 import com.samples.config.FareConfig;
-import com.samples.config.JourneyWeightageConfig;
+import com.samples.config.FareFreeDaysConfig;
 import com.samples.config.PeakHourConfig;
 import com.samples.domains.Journey;
 import com.samples.services.*;
@@ -21,12 +21,11 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class ApplicationTest {
 
-    JourneyWeightageConfig journeyWeightageConfig = new JourneyWeightageConfig();
-    TotalFareCalculator totalFareCalculator = new TotalFareCalculator(
+     TotalFareCalculator totalFareCalculator = new TotalFareCalculator(
             new WeekFaresCalculator(
-                    new WeekFareWithCapCalculator(journeyWeightageConfig,
-                            new DayFaresCalculator(new DayFareWithCapCalculator(journeyWeightageConfig,
-                                    new FareCalculator(new FareConfig(new PeakHourConfig())))))));
+                    new WeekFareWithCapCalculator(
+                            new DayFaresCalculator(new DayFareWithCapCalculator(
+                                    new FareCalculator(new FareConfig(new PeakHourConfig(), new FareFreeDaysConfig())))))));
 
     @ParameterizedTest
     @ArgumentsSource(IntegratedTestArgumentProvider.class)

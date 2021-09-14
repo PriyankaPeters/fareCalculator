@@ -1,6 +1,5 @@
 package com.samples.services;
 
-import com.samples.config.JourneyWeightageConfig;
 import com.samples.domains.Journey;
 import com.samples.domains.Zone;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -25,9 +24,6 @@ import static org.mockito.Mockito.when;
 class DayFareWithCapCalculatorTest {
 
     @Mock
-    JourneyWeightageConfig journeyWeightageConfig;
-
-    @Mock
     FareCalculator fareCalculator;
 
     @InjectMocks
@@ -37,7 +33,6 @@ class DayFareWithCapCalculatorTest {
     @ArgumentsSource(DayCapArgumentsProvider.class)
     public void testCalculate(Integer totalDayFare, Integer maxJourneyWeightage, Integer expectedResultFare){
         Journey testJourney = new Journey(LocalDateTime.of(2021,07,23,1,0), Zone.zone1, Zone.zone1);
-        when(journeyWeightageConfig.getWeightage(any())).thenReturn(maxJourneyWeightage);
         lenient().when(fareCalculator.getFare(testJourney)).thenReturn(30);
         assertEquals(expectedResultFare, dayFareWithCapCalculator.calculate(totalDayFare, testJourney));
     }

@@ -1,6 +1,5 @@
 package com.samples.services;
 
-import com.samples.config.JourneyWeightageConfig;
 import com.samples.domains.Journey;
 import com.samples.domains.Zone;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -26,9 +25,6 @@ import static org.mockito.Mockito.when;
 class WeekFareWithCapCalculatorTest {
 
     @Mock
-    JourneyWeightageConfig journeyWeightageConfig;
-
-    @Mock
     DayFaresCalculator dayFaresCalculator;
 
     @InjectMocks
@@ -43,8 +39,7 @@ class WeekFareWithCapCalculatorTest {
 
     @ParameterizedTest
     @ArgumentsSource(WeekCapArgumentsProvider.class)
-    public void testCalculate(Integer totalDayFare, Integer maxJourneyWeightage, Integer expectedResultFare){
-        when(journeyWeightageConfig.getWeightage(any())).thenReturn(maxJourneyWeightage);
+    public void testCalculate(Integer totalDayFare, Integer expectedResultFare){
         when(dayFaresCalculator.calculate(any())).thenReturn(
                 Map.of(testJourney.getStartDateTime().getDayOfWeek().getValue(), totalDayFare));
         assertEquals(expectedResultFare, weekFareWithCapCalculator.calculate(List.of(testJourney)));
@@ -55,9 +50,9 @@ class WeekFareWithCapCalculatorTest {
         @Override
         public Stream<? extends Arguments> provideArguments(ExtensionContext context) {
             return Stream.of(
-                    Arguments.of(30, 1, 30),
-                    Arguments.of(500, 2, 500),
-                    Arguments.of(800, 3, 600));
+                    Arguments.of(30, 30),
+                    Arguments.of(500, 500),
+                    Arguments.of(800, 500));
         }
     }
 

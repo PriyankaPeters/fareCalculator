@@ -1,21 +1,25 @@
 package com.samples.services;
 
-import com.samples.config.JourneyWeightageConfig;
 import com.samples.domains.Journey;
+import com.samples.domains.Zone;
+import org.apache.commons.collections.map.MultiKeyMap;
 
 import java.util.List;
 import java.util.Map;
 
 public class WeekFareWithCapCalculator {
 
-    private static Map<Integer, Integer> weekFareCaps = Map.of(3, 600,
-            2, 500, 1, 400);
+    private static MultiKeyMap weekFareCaps = new MultiKeyMap();
 
-    private final JourneyWeightageConfig journeyWeightageConfig;
+    static {
+        weekFareCaps.put(Zone.zone1, Zone.zone1, 500);
+        weekFareCaps.put(Zone.zone1, Zone.zone2, 600);
+        weekFareCaps.put(Zone.zone2, Zone.zone1, 600);
+        weekFareCaps.put(Zone.zone2, Zone.zone2, 400);
+    }
     private final DayFaresCalculator dayFaresCalculator;
 
-    public WeekFareWithCapCalculator(JourneyWeightageConfig journeyWeightageConfig, DayFaresCalculator dayFaresCalculator) {
-        this.journeyWeightageConfig = journeyWeightageConfig;
+    public WeekFareWithCapCalculator(DayFaresCalculator dayFaresCalculator) {
         this.dayFaresCalculator = dayFaresCalculator;
     }
 
@@ -37,14 +41,8 @@ public class WeekFareWithCapCalculator {
     }
 
     private Integer getCap(List<Journey> journeysInTheWeek) {
-        Integer maxJourneyWeightage = getMaxWeightage(journeysInTheWeek);
-        Integer cap = weekFareCaps.get(maxJourneyWeightage);
+        Integer cap = journeysInTheWeek.stream().mapToInt(journey ->
+                (Integer) weekFareCaps.get(journey.getFromZone(),journey.getToZone())).max().getAsInt();
         return cap;
-    }
-
-    private Integer getMaxWeightage(List<Journey> journeysInTheWeek) {
-        int maxWeightage = journeysInTheWeek.stream().mapToInt(
-                journey -> journeyWeightageConfig.getWeightage(journey)).max().getAsInt();
-        return maxWeightage;
     }
 }
